@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
-
-import java.time.Clock
-
-class Module extends AppModule:
-
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(
-      bind[Clock].toInstance(Clock.systemDefaultZone),
-      bind[IdentifierAction].to[AuthenticatedIdentifierAction]
-    )
+object IdentifierType {
+  val FATCAID = "FATCAID"
+}

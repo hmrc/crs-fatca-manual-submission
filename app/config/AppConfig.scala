@@ -28,3 +28,6 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
   val readSubmissionToken: String = config.get[String]("microservices.service.read-submission-history.auth")
   val readSubmissionUrl : String = servicesConfig.baseUrl("read-submission-history")
 
+  lazy val voidFatcaSubmission: String = servicesConfig.baseUrl("void-fatca-submission")
+  val bearerToken: String => String = (serviceName: String) => config.get[String](s"microservice.services.$serviceName.bearer-token")
+  val enrolmentKey: String = config.get[String]("keys.enrolmentKey.crsFatca")

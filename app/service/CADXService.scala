@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package module
+package service
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import connector.CADXConnector
+import models.VoidFatcaRequest
+import play.api.Logging
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Clock
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class Module extends AppModule:
+class CADXService @Inject(connector: CADXConnector)(implicit val clock: Clock, ec: ExecutionContext) extends Logging{
 
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(
-      bind[Clock].toInstance(Clock.systemDefaultZone),
-      bind[IdentifierAction].to[AuthenticatedIdentifierAction]
-    )
+  def submitFatcaVoid(voidFatcaRequest: VoidFatcaRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+
+}

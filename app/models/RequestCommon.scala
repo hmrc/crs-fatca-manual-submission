@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.Clock
+final case class RequestCommon(
+                                originatingSystem: String,
+                                transmittingSystem: String,
+                                regime: Regime,
+                                requestParameters: Option[Seq[RequestParameter]]
+                              )
 
-class Module extends AppModule:
-
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(
-      bind[Clock].toInstance(Clock.systemDefaultZone),
-      bind[IdentifierAction].to[AuthenticatedIdentifierAction]
-    )
+object RequestCommon {
+  implicit val format: OFormat[RequestCommon] = Json.format[RequestCommon]
+}

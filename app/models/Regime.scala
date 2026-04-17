@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import play.api.libs.json.*
 
-import java.time.Clock
 
-class Module extends AppModule:
+sealed trait Regime
 
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(
-      bind[Clock].toInstance(Clock.systemDefaultZone),
-      bind[IdentifierAction].to[AuthenticatedIdentifierAction]
-    )
+object Regime:
+
+  case object FATCA extends Regime
+
+  given Reads[Regime] = Reads:
+    case JsString("FATCA") => JsSuccess(FATCA)
+    case _                => JsError("Invalid regime value")
+
+  given Writes[Regime] = Writes:
+    case FATCA => JsString("FATCA")
+

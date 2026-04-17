@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.Clock
+final case class VoidRequestPayload(voidRequest: VoidRequest)
 
-class Module extends AppModule:
+object VoidRequestPayload:
+  given OFormat[VoidRequestPayload] = Json.format[VoidRequestPayload]
 
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(
-      bind[Clock].toInstance(Clock.systemDefaultZone),
-      bind[IdentifierAction].to[AuthenticatedIdentifierAction]
-    )
