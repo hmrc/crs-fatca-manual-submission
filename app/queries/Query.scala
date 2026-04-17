@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package config
+package queries
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import models.UserAnswers
+import play.api.libs.json.JsPath
 
-@Singleton
-class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig):
+import scala.util.{Success, Try}
 
-  val appName: String = config.get[String]("appName")
-  val cacheTtl: Long = config.get[Int]("mongodb.timeToLiveInDays")
-  val readSubmissionToken: String = config.get[String]("microservices.service.read-submission-history.auth")
-  val readSubmissionUrl : String = servicesConfig.baseUrl("read-submission-history")
+sealed trait Query {
 
+  def path: JsPath
+}
+
+trait Gettable[A] extends Query
+
+trait Settable[A] extends Query {
+
+  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
+    Success(userAnswers)
+}

@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package config
+package models
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.{Json, OFormat}
 
-@Singleton
-class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig):
 
-  val appName: String = config.get[String]("appName")
-  val cacheTtl: Long = config.get[Int]("mongodb.timeToLiveInDays")
-  val readSubmissionToken: String = config.get[String]("microservices.service.read-submission-history.auth")
-  val readSubmissionUrl : String = servicesConfig.baseUrl("read-submission-history")
+case class SubmissionsListResponse(
+                                    responseCommon: ReadSubmissionResponseCommon,
+                                    responseDetails: ReadSubmissionResponseDetails
+                                  )
 
+object SubmissionsListResponse {
+  implicit val format : OFormat[SubmissionsListResponse] = Json.format[SubmissionsListResponse]
+}
