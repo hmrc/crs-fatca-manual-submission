@@ -31,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ManualSubmissionRepository @Inject() (
+class SubmissionsRepository @Inject()(
   mongoComponent: MongoComponent,
   appConfig: AppConfig,
   clock: Clock
@@ -52,12 +52,12 @@ class ManualSubmissionRepository @Inject() (
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  private def byId(id: String): Bson = Filters.equal("_id", id)
+  private def bySubscriptionId(id: String): Bson = Filters.equal("_id", id)
 
   def keepAlive(id: String): Future[Boolean] =
     collection
       .updateOne(
-        filter = byId(id),
+        filter = bySubscriptionId(id),
         update = Updates.set("lastUpdated", Instant.now(clock))
       )
       .toFuture()
@@ -70,7 +70,7 @@ class ManualSubmissionRepository @Inject() (
       _ =>
         Mdc.preservingMdc {
           collection
-            .find(byId(id))
+            .find(bySubscriptionId(id))
             .headOption()
         }
     }
@@ -81,7 +81,7 @@ class ManualSubmissionRepository @Inject() (
 
     collection
       .replaceOne(
-        filter = byId(updatedAnswers.id),
+        filter = bySubscriptionId(updatedAnswers.id),
         replacement = updatedAnswers,
         options = ReplaceOptions().upsert(true)
       )
@@ -93,7 +93,7 @@ class ManualSubmissionRepository @Inject() (
 
   def clear(id: String): Future[Boolean] =
     collection
-      .deleteOne(byId(id))
+      .deleteOne(bySubscriptionId(id))
       .toFuture()
       .map(
         _ => true

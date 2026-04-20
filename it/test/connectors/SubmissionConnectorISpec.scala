@@ -1,21 +1,41 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package connectors
 
 import config.AppConfig
-import org.scalatest.matchers.should.Matchers.should
-import play.api.libs.json.JsPath.json
-import play.api.libs.json.Json
-import utils.SpecHelper
-import io.circe.*
-import io.circe.generic.auto.*
 import io.circe.literal.json
-import io.circe.syntax.*
-class SubmissionConnectorISpec extends SpecHelper{
+import org.scalatest.matchers.should.Matchers.should
+import play.api.Application
+import play.api.libs.json.Json
+import utils.{SpecHelper, WireMockServerHandler}
 
-  val appConfig : AppConfig = app.injector.instanceOf[AppConfig]
-  val connector : SubmissionsConnector = app.injector.instanceOf[SubmissionsConnector]
-  lazy val url = s"http://localhost:$port/dac6/getlistofsubmissions/v1"
+import scala.language.postfixOps
 
-  import io.circe._, io.circe.generic.auto._, io.circe.syntax._
+class SubmissionConnectorISpec extends SpecHelper with WireMockServerHandler {
+
+  lazy val app: Application = applicationBuilder()
+    .configure(
+      conf = "microservice.services.read-submission-history.port" -> server.port(),
+      "auditing.enabled" -> "false"
+    )
+    .build()
+  lazy val appConfig: AppConfig            = app.injector.instanceOf[AppConfig]
+  lazy val connector: SubmissionsConnector = app.injector.instanceOf[SubmissionsConnector]
+  lazy val url                        = s"/dac6/getlistofsubmissions/v1"
 
   val successResponse =
     json"""
@@ -64,12 +84,18 @@ class SubmissionConnectorISpec extends SpecHelper{
     }
   }
   """
-  
-"SubmissionsConnector" - {
-  "successfully parse response body into a list of submissions in case of a 200 response" in {
-    
-    stubGet(url, 200, successResponse.toString)
- 
+
+  "SubmissionsConnector" - {
+    "successfully parse response body into a list of submissions in case of a 200 response" in {
+      readSubmissionRequestGen.map {
+        requestPayload =>
+          stubGet(url, 200, successResponse.toString)
+          val result = connector.readSubmission(requestBody = requestPayload)
+          result.futureValue mustEqual Json.parse(successResponse.toString)
+      }
+
+    }
+
   }
-}
+
 }

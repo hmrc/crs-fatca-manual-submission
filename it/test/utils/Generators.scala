@@ -1,31 +1,58 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package utils
 
-import models.{CommonParameters, ReadSubmissionRequest, ReadSubmissionRequestCommon, ReadSubmissionRequestDetails, SubmissionsListRequest}
-import models.SubmissionsListResponseGenerator.{CRFA, CRS, FATCA, RegimeType}
+import models.{
+  CommonParameters,
+  ReadSubmissionRequest,
+  ReadSubmissionRequestCommon,
+  ReadSubmissionRequestDetails,
+  ReadSubmissionResponse,
+  ReadSubmissionResponseCommon,
+  ReadSubmissionResponseDetails,
+  SubmissionsListRequest,
+  SubmissionsListResponse,
+  SubmittedReport
+}
+import models.SubmissionsConstants.{CRFA, CRS, CRS701, FATCA, PASSED, RegimeType, SubmissionStatus, XML}
 import org.scalacheck.Gen
 
-class Generators {
+import java.time.LocalDate
+
+trait Generators {
+
   def regimeTypeGen: Gen[RegimeType] =
     Gen.oneOf(CRS, FATCA, CRFA)
 
-
   def requestParameterGen: Gen[CommonParameters] =
     for
-      paramName <- Gen.stringOfN(10, Gen.alphaNumChar)
+      paramName  <- Gen.stringOfN(10, Gen.alphaNumChar)
       paramValue <- Gen.stringOfN(15, Gen.alphaNumChar)
     yield CommonParameters(paramName, paramValue)
-
 
   def requestParametersGen: Gen[Option[List[CommonParameters]]] =
     Gen.option(Gen.listOfN(2, requestParameterGen))
 
-
   def requestCommonGen: Gen[ReadSubmissionRequestCommon] =
     for
-      originatingSystem <- Gen.const("MDTP")
+      originatingSystem  <- Gen.const("MDTP")
       transmittingSystem <- Gen.const("CADX")
-      regime <- regimeTypeGen
-      requestParameters <- requestParametersGen
+      regime             <- regimeTypeGen
+      requestParameters  <- requestParametersGen
     yield ReadSubmissionRequestCommon(
       originatingSystem = originatingSystem,
       transmittingSystem = transmittingSystem,
@@ -33,39 +60,69 @@ class Generators {
       requestParameters = requestParameters
     )
 
-  
-
-
-  def subscriptionIdGen: Gen[String] =
-    Gen.stringOfN(8, Gen.alphaNumChar).map(s => s"CBCID${s.take(8)}")
-
-
-  def fiIdGen: Gen[Option[String]] =
-    Gen.option(
-      Gen.stringOfN(15, Gen.alphaNumChar).map(s => s"${s.take(6)}")
-    )
-
-
   def requestDetailsGen: Gen[ReadSubmissionRequestDetails] =
     for
-      subscriptionId <- subscriptionIdGen
-      fiId <- fiIdGen
+      subscriptionId <- Gen.alphaNumStr
+      fiId           <- Gen.numStr
     yield ReadSubmissionRequestDetails(
       subscriptionId = subscriptionId,
-      fiId = fiId
+      fiId = Some(fiId)
     )
-  
-  
-  def readSubmissionRequestGen(regime: RegimeType): Gen[ReadSubmissionRequest] =
-    for
-      requestCommon <- requestCommonGen.map(_.copy(regime = regime))
+
+  def readSubmissionRequestGen: Gen[ReadSubmissionRequest] =
+    for {
+      requestCommon  <- requestCommonGen
       requestDetails <- requestDetailsGen
-    yield ReadSubmissionRequest(SubmissionsListRequest(
-      requestCommon = requestCommon,
-      requestDetails = requestDetails
-    ))
+    } yield ReadSubmissionRequest(
+      SubmissionsListRequest(
+        requestCommon = requestCommon,
+        requestDetails = requestDetails
+      )
+    )
 
 
- 
+
+  def responseCommonGen: Gen[ReadSubmissionResponseCommon] =
+    for
+      regime             <- regimeTypeGen
+      responseParameters <- requestParametersGen
+    yield ReadSubmissionResponseCommon(regime = regime, responseParameters = responseParameters)
+
+
+  def responseDetailsGen: Gen[ReadSubmissionResponseDetails] =
+    for
+      originalMessageRefId <- Gen.alphaNumStr
+      fiId <- Gen.numStr
+      fiName <- Gen.alphaLowerStr
+      fileName <- Gen.alphaNumStr
+      submissionCaseId <- Gen.alphaNumStr
+      messageRefId <- Gen.alphaNumStr
+    yield ReadSubmissionResponseDetails(
+      List(
+        SubmittedReport(
+          fiId = fiId,
+          fiName = fiName,
+          fileName = fileName,
+          submissionStatus = PASSED,
+          uploadDateTime = LocalDate.now().toString,
+          regime = CRS,
+          reportingYear = "2025",
+          submissionCaseId = submissionCaseId,
+          submissionType = XML,
+          submissionFileType = CRS701,
+          messageRefId = messageRefId
+        )
+      )
+    )
+  def readSubmissionResponseGen: Gen[ReadSubmissionResponse] =
+    for {
+      responseCommon <- responseCommonGen
+      responseDetail <- responseDetailsGen
+    } yield ReadSubmissionResponse(
+      SubmissionsListResponse(
+        responseCommon = responseCommon,
+        responseDetails = responseDetail
+      )
+    )
 
 }
