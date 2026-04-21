@@ -41,7 +41,6 @@ class SubmissionsConnector @Inject()(val config: AppConfig,
   
   def readSubmission(requestBody: ReadSubmissionRequest)(implicit hc:HeaderCarrier): Future[ReadSubmissionResponse] ={
     val correlationID=  UUID.randomUUID()
-    logger.info(s"calling EIS with correlationID: ${correlationID.toString}")
     http
       .post(url"${config.readSubmissionUrl}/dac6/getlistofsubmission")
       .withBody(Json.toJson(requestBody))
@@ -54,7 +53,7 @@ class SubmissionsConnector @Inject()(val config: AppConfig,
             Future.failed(InvalidJson)
         }
         case res =>
-          logger.info(s"Unsuccessful call made to retrieve submission data for ${correlationID.toString}")
+          logger.error(s"Unsuccessful call made to retrieve submission data for ${correlationID.toString}")
           Future.failed(UnexpectedResponse)
       }
   }

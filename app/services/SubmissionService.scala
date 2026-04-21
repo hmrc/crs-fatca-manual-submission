@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.Inject
 import connectors.SubmissionsConnector
-import models.{ReadSubmissionRequest, ReadSubmissionRequestCommon, ReadSubmissionRequestDetails, RequestSubmissionHistoryParameters, SubmissionsListRequest, SubmittedReport, UserAnswers}
+import models.{ReadSubmissionRequest, ReadSubmissionRequestCommon, ReadSubmissionRequestDetails, ReadSubmissionResponseDetails, RequestSubmissionHistoryParameters, SubmissionsListRequest, SubmittedReport, UserAnswers}
 import org.apache.pekko.Done
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsObject, Json}
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionService @Inject() (submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
 
-  def readAndMaybeCache(requestBody: RequestSubmissionHistoryParameters)(implicit hc: HeaderCarrier): Future[List[SubmittedReport]] = {
+  def readAndMaybeCache(requestBody: RequestSubmissionHistoryParameters)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponseDetails] = {
     val submissionRequest = ReadSubmissionRequest(
       SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(requestBody.subscriptionId, requestBody.fiId),
                              requestCommon = ReadSubmissionRequestCommon()
@@ -37,11 +37,9 @@ class SubmissionService @Inject() (submissionsConnector: SubmissionsConnector, r
     )
       for
         submissionResponse <- submissionsConnector.readSubmission(submissionRequest)
-        submissions = submissionResponse.submissionsListResponse.responseDetails.submissionsList
+        submissions = submissionResponse.submissionsListResponse.responseDetails
         //NOTE: we should wipe their data and replace with new record if cache option is true
-        _ <- if (requestBody.shouldCache) repository.set(UserAnswers(requestBody.userId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
+        _ <- if (requestBody.shouldCache) repository.set(UserAnswers(requestBody.subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
       yield submissions
-    } 
-  
-
+    }
 }
