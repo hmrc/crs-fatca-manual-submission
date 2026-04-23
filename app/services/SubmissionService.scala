@@ -18,7 +18,15 @@ package services
 
 import com.google.inject.Inject
 import connectors.SubmissionsConnector
-import models.{ReadSubmissionRequest, ReadSubmissionRequestCommon, ReadSubmissionRequestDetails, ReadSubmissionResponseDetails, RequestSubmissionHistoryParameters, SubmissionsListRequest, SubmittedReport, UserAnswers}
+import models.{
+  ReadSubmissionRequest,
+  ReadSubmissionRequestCommon,
+  ReadSubmissionRequestDetails,
+  ReadSubmissionResponseDetails,
+  RequestSubmissionHistoryParameters,
+  SubmissionsListRequest,
+  UserAnswers
+}
 import org.apache.pekko.Done
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsObject, Json}
@@ -29,17 +37,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionService @Inject() (submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
 
-  def readAndMaybeCache(requestBody: RequestSubmissionHistoryParameters)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponseDetails] = {
+  def readAndMaybeCache(requestBody: RequestSubmissionHistoryParameters, subscriptionId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[ReadSubmissionResponseDetails] = {
     val submissionRequest = ReadSubmissionRequest(
-      SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(requestBody.subscriptionId, requestBody.fiId),
-                             requestCommon = ReadSubmissionRequestCommon()
-      )
+      SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(subscriptionId, requestBody.fiId), requestCommon = ReadSubmissionRequestCommon())
     )
-      for
-        submissionResponse <- submissionsConnector.readSubmission(submissionRequest)
-        submissions = submissionResponse.submissionsListResponse.responseDetails
-        //NOTE: we should wipe their data and replace with new record if cache option is true
-        _ <- if (requestBody.shouldCache) repository.set(UserAnswers(requestBody.subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
-      yield submissions
-    }
+    for
+      submissionResponse <- submissionsConnector.readSubmission(submissionRequest)
+      submissions = submissionResponse.submissionsListResponse.responseDetails
+      // NOTE: we should wipe their data and replace with new record if cache option is true
+      _ <- if (requestBody.shouldCache) repository.set(UserAnswers(subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
+    yield submissions
+  }
 }

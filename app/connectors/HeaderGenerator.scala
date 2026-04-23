@@ -39,14 +39,14 @@ object HeaderGenerator {
 
   def xConversationId: (String, String) =
     "x-conversation-id" -> UUID.randomUUID().toString
-  
+
   def xForwardedHost: (String, String) =
     "x-forwarded-host" -> "MDTP"
 
   def defaultHeaders(authHeader: String, correlationID: UUID): Seq[(String, String)] =
     Seq(
       accept(),
-      "Authorization" -> authHeader,
+      "Authorization"    -> authHeader,
       "x-correlation-id" -> correlationID.toString,
       contentType(),
       date,

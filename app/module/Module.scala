@@ -16,6 +16,7 @@
 
 package module
 
+import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
 import play.api.inject.{Binding, Module as AppModule}
 import play.api.{Configuration, Environment}
 
@@ -27,6 +28,4 @@ class Module extends AppModule:
     environment: Environment,
     configuration: Configuration
   ): Seq[Binding[_]] =
-    
-    bind[Clock].toInstance(Clock.systemDefaultZone) :: // inject if current time needs to be controlled in unit tests
-      Nil
+    Seq(bind[Clock].toInstance(Clock.systemDefaultZone), bind[IdentifierAction].to[AuthenticatedIdentifierAction])

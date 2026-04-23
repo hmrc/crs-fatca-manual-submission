@@ -16,14 +16,14 @@
 
 package models
 
-
 import SubmissionsConstants.RegimeType
 import play.api.libs.json.{Json, OFormat}
 
 case class ReadSubmissionResponseCommon(
-                           regime: RegimeType,
-                           responseParameters: Option[List[CommonParameters]]
-                         )
+  regime: RegimeType,
+  responseParameters: Option[List[CommonParameters]]
+)
+
 object ReadSubmissionResponseCommon {
   implicit val format: OFormat[ReadSubmissionResponseCommon] = Json.format[ReadSubmissionResponseCommon]
 }

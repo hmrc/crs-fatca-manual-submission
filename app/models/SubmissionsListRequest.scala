@@ -18,12 +18,11 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-
 case class SubmissionsListRequest(
-                                    requestCommon: ReadSubmissionRequestCommon,
-                                    requestDetails: ReadSubmissionRequestDetails
-                                  )
+  requestCommon: ReadSubmissionRequestCommon,
+  requestDetails: ReadSubmissionRequestDetails
+)
 
 object SubmissionsListRequest {
-  implicit val format : OFormat[SubmissionsListRequest] = Json.format[SubmissionsListRequest]
+  implicit val format: OFormat[SubmissionsListRequest] = Json.format[SubmissionsListRequest]
 }

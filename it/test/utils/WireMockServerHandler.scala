@@ -17,10 +17,11 @@
 package utils
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, urlEqualTo, urlPathMatching}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
+import play.api.libs.json.Json
 
 trait WireMockServerHandler extends BeforeAndAfterAll with BeforeAndAfterEach {
   this: Suite =>
@@ -49,6 +50,16 @@ trait WireMockServerHandler extends BeforeAndAfterAll with BeforeAndAfterEach {
           aResponse()
             .withStatus(expectedStatus)
             .withBody(expectedBody)
+        )
+    )
+
+  protected def stubPostResponse(url: String, status: Int, body: String = Json.obj().toString()): StubMapping =
+    server.stubFor(
+      post(urlPathMatching(url))
+        .willReturn(
+          aResponse()
+            .withStatus(status)
+            .withBody(body)
         )
     )
 

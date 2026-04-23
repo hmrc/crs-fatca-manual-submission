@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class RequestSubmissionHistoryParameters (shouldCache:Boolean, fiId: Option[String], subscriptionId: String)
+case class RequestSubmissionHistoryParameters(shouldCache: Boolean, fiId: Option[String])
 
 object RequestSubmissionHistoryParameters {
   implicit val format: OFormat[RequestSubmissionHistoryParameters] = Json.format[RequestSubmissionHistoryParameters]

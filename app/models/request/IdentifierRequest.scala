@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package models
+package models.request
 
-trait HodErrors extends Throwable
-object HodErrors {
-  case object UnexpectedResponse extends HodErrors
-  case object InvalidJson extends HodErrors
-}
+import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.auth.core.AffinityGroup
+
+case class IdentifierRequest[A](request: Request[A], userId: String, fatcaId: String, userType: AffinityGroup) extends WrappedRequest[A](request)

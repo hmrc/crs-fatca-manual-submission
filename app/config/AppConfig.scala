@@ -23,8 +23,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 @Singleton
 class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig):
 
-  val appName: String = config.get[String]("appName")
-  val cacheTtl: Long = config.get[Int]("mongodb.timeToLiveInDays")
+  val appName: String             = config.get[String]("appName")
+  val cacheTtl: Long              = config.get[Int]("mongodb.timeToLiveInDays")
   val readSubmissionToken: String = config.get[String]("microservice.services.read-submission.auth")
-  val readSubmissionUrl : String = servicesConfig.baseUrl("read-submission")
-
+  val readSubmissionUrl: String   = servicesConfig.baseUrl("read-submission")
+  val enrolmentKey: String        = config.get[String]("keys.enrolmentKey.crsFatca")

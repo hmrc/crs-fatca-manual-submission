@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
+import controllers.actions.IdentifierAction
 import models.RequestSubmissionHistoryParameters
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
@@ -26,10 +27,16 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ReadAndCacheSubmissionController @Inject() (submissionService: SubmissionService, cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends BackendController(cc) {
+class ReadAndCacheSubmissionController @Inject() (submissionService: SubmissionService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
+  ec: ExecutionContext
+) extends BackendController(cc) {
 
-  def readAndMaybeRefreshDatabase(): Action[RequestSubmissionHistoryParameters] = Action.async(parse.json[RequestSubmissionHistoryParameters]) { implicit request =>
-    submissionService.readAndMaybeCache(request.body).map(response => Ok(Json.toJson(response)))
+  def readAndMaybeRefreshDatabase(): Action[RequestSubmissionHistoryParameters] = identifierAction.async(parse.json[RequestSubmissionHistoryParameters]) {
+    implicit request =>
+      submissionService
+        .readAndMaybeCache(request.body, request.fatcaId)
+        .map(
+          response => Ok(Json.toJson(response))
+        )
   }
 }

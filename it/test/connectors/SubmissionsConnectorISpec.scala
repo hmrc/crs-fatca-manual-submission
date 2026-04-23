@@ -18,18 +18,22 @@ package connectors
 
 import config.AppConfig
 import io.circe.literal.json
+import models.ReadSubmissionResponse
+import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.matchers.should.Matchers.should
 import play.api.Application
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.{SpecHelper, WireMockServerHandler}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
-class SubmissionConnectorISpec extends SpecHelper with WireMockServerHandler {
+class SubmissionsConnectorISpec extends SpecHelper with WireMockServerHandler {
 
   lazy val app: Application = applicationBuilder()
     .configure(
-      conf = "microservice.services.read-submission-history.port" -> server.port(),
+      conf = "microservice.services.read-submission.port" -> server.port(),
       "auditing.enabled" -> "false"
     )
     .build()
@@ -86,14 +90,46 @@ class SubmissionConnectorISpec extends SpecHelper with WireMockServerHandler {
   """
 
   "SubmissionsConnector" - {
-    "successfully parse response body into a list of submissions in case of a 200 response" in {
-      readSubmissionRequestGen.map {
-        requestPayload =>
-          stubGet(url, 200, successResponse.toString)
-          val result = connector.readSubmission(requestBody = requestPayload)
-          result.futureValue mustEqual Json.parse(successResponse.toString)
-      }
+    "Should return submissionList when EIS returns a 200 response with a valid response body" in {
+      val requestPayload = readSubmissionRequestGen.sample.getOrElse(
+        fail("Generator did not produce a value")
+      )
+      stubPostResponse(url, 200, successResponse.toString)
+      val result = connector.readSubmission(requestBody = requestPayload)
+      result.futureValue mustEqual Json.parse(successResponse.toString).as[ReadSubmissionResponse]
+    }
 
+    "Should return an Upstream Error Response when EIS returns a non‑200 response" in {
+      val requestPayload = readSubmissionRequestGen.sample.getOrElse(
+        fail("Generator did not produce a value")
+      )
+      stubPostResponse(url, 400)
+
+      val ex =
+        recoverToExceptionIf[UpstreamErrorResponse] {
+          connector.readSubmission(requestPayload)
+        }.futureValue
+
+      ex.statusCode mustBe 500
+      ex.message mustBe "Unexpected response code"
+    }
+
+    "Should return an Upstream Error Response when EIS returns a 200 with invalid response body" in {
+      val requestPayload = readSubmissionRequestGen.sample.getOrElse(
+        fail("Generator did not produce a value")
+      )
+      val testJson =
+        """{
+          |"status":"failed"
+          |}""".stripMargin
+      stubPostResponse(url, 200, testJson)
+      val ex =
+        recoverToExceptionIf[UpstreamErrorResponse] {
+          connector.readSubmission(requestPayload)
+        }.futureValue
+
+      ex.statusCode mustBe 500
+      ex.message mustBe "Invalid json returned"
     }
 
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,8 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+object IdentifierType {
+  val UTR     = "UTR"
+  val FATCAID = "FATCAID"
 
-case class CommonParameters(
-  paramName: String,
-  paramValue: String
-)
-
-object CommonParameters {
-  implicit val format: OFormat[CommonParameters] = Json.format[CommonParameters]
 }
