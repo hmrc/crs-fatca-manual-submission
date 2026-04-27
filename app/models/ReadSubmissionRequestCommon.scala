@@ -17,12 +17,13 @@
 package models
 
 import SubmissionsConstants.{CRFA, RegimeType}
+import models.Constants.{CADXTransmittingSystem, MDTPSystem}
 import play.api.libs.json.{Json, OFormat}
 
 case class ReadSubmissionRequestCommon(
   regime: RegimeType = CRFA,
-  originatingSystem: String = "MDTP",
-  transmittingSystem: String = "CADX",
+  originatingSystem: String = MDTPSystem,
+  transmittingSystem: String = CADXTransmittingSystem,
   requestParameters: Option[List[CommonParameters]] = None
 )
 

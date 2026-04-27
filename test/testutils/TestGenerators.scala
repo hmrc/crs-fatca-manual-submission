@@ -29,6 +29,7 @@ import models.{
   SubmissionsListResponse,
   SubmittedReport
 }
+import models.fatcavoid.{Regime, RequestCommon, RequestDetails, VoidRequest, VoidRequestPayload}
 import org.scalacheck.Gen
 
 import java.time.LocalDate
@@ -122,5 +123,29 @@ trait TestGenerators {
         responseDetails = responseDetail
       )
     )
+
+  def requestCommonGenForFatcaVoid: Gen[RequestCommon] =
+    RequestCommon(originatingSystem = "MDTP", transmittingSystem = "EIS", regime = Regime.FATCA, requestParameters = None)
+
+  def requestDetailsGenForFatcaVoid: Gen[RequestDetails] =
+    for {
+      subscriptionId <- Gen.alphaNumStr
+      messageRefId   <- Gen.alphaNumStr
+      fiId           <- Gen.alphaNumStr
+    } yield RequestDetails(subscriptionId = subscriptionId, messageRefId = messageRefId, fiId = fiId)
+
+  def voidRequestGen: Gen[VoidRequest] =
+    for {
+      requestCommon  <- requestCommonGenForFatcaVoid
+      requestDetails <- requestDetailsGenForFatcaVoid
+    } yield VoidRequest(
+      requestCommon = requestCommon,
+      requestDetails = requestDetails
+    )
+
+  def voidRequestPayloadGen: Gen[VoidRequestPayload] =
+    for {
+      voidReq <- voidRequestGen
+    } yield VoidRequestPayload(voidRequest = voidReq)
 
 }

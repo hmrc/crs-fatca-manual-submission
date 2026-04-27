@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package connectors
+package models.fatcavoid
 
-import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
-import java.time.ZoneId
-import java.util.UUID
+import play.api.libs.json.*
 
-object HeaderGenerator {
+sealed trait Regime
 
-  def defaultHeaders(bearerToken: String, correlationID: UUID): Seq[(String, String)] =
-    Seq()
-      .withAccept()
-      .withBearerToken(bearerToken)
-      .withXCorrelationId(Some(correlationID))
-      .withContentType()
-      .withDate()
-      .withXConversationId()
-      .withXForwardedHost()
-}
+object Regime:
+
+  case object FATCA extends Regime
+
+  given Reads[Regime] = Reads:
+    case JsString("FATCA") => JsSuccess(FATCA)
+    case _                 => JsError("Invalid regime value")
+
+  given Writes[Regime] = Writes:
+    case FATCA => JsString("FATCA")

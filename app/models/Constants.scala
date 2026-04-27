@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package connectors
+package models
 
-import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
 import java.time.ZoneId
-import java.util.UUID
 
-object HeaderGenerator {
-
-  def defaultHeaders(bearerToken: String, correlationID: UUID): Seq[(String, String)] =
-    Seq()
-      .withAccept()
-      .withBearerToken(bearerToken)
-      .withXCorrelationId(Some(correlationID))
-      .withContentType()
-      .withDate()
-      .withXConversationId()
-      .withXForwardedHost()
+object Constants {
+  val MDTPSystem: String             = "MDTP"
+  val CRFARegime: String             = "CRFA"
+  val EISTransmittingSystem: String  = "EIS"
+  val CADXTransmittingSystem: String = "CADX"
 }

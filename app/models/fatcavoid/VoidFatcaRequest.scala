@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package connectors
+package models.fatcavoid
 
-import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
-import java.time.ZoneId
-import java.util.UUID
+import play.api.libs.json.{Json, OFormat}
 
-object HeaderGenerator {
+case class VoidFatcaRequest(messageRefId: String, fiid: String)
 
-  def defaultHeaders(bearerToken: String, correlationID: UUID): Seq[(String, String)] =
-    Seq()
-      .withAccept()
-      .withBearerToken(bearerToken)
-      .withXCorrelationId(Some(correlationID))
-      .withContentType()
-      .withDate()
-      .withXConversationId()
-      .withXForwardedHost()
-}
+object VoidFatcaRequest:
+  given OFormat[VoidFatcaRequest] = Json.format[VoidFatcaRequest]
