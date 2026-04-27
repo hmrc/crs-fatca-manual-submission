@@ -1,7 +1,27 @@
 
 # crs-fatca-manual-submission
 
-This is a placeholder README.md for a new repository
+Backend service to support manual file submission from crs & fatca.
+
+The frontend to this service can be found [here](https://github.com/hmrc/crs-fatca-manual-submission-frontend)
+
+---
+
+### Running the service
+
+Service manager: CRS_FATCA_ALL
+
+**Port:** 10040
+
+---
+
+### API
+
+| Task                     | Supported methods | Description                                                   |
+|--------------------------|-------------------|---------------------------------------------------------------|
+| /read-submission-history | POST              | Reads Submission History for fiid(if provided) & subscription |
+                                    |
+---
 
 ### License
 

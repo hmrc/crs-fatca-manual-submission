@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package module
+package models.request
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.auth.core.AffinityGroup
 
-import java.time.Clock
-
-class Module extends AppModule:
-
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(bind[Clock].toInstance(Clock.systemDefaultZone), bind[IdentifierAction].to[AuthenticatedIdentifierAction])
+case class IdentifierRequest[A](request: Request[A], userId: String, fatcaId: String, userType: AffinityGroup) extends WrappedRequest[A](request)

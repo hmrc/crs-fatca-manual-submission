@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import SubmissionsConstants.{CRFA, RegimeType}
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.Clock
+case class ReadSubmissionRequestCommon(
+  regime: RegimeType = CRFA,
+  originatingSystem: String = "MDTP",
+  transmittingSystem: String = "CADX",
+  requestParameters: Option[List[CommonParameters]] = None
+)
 
-class Module extends AppModule:
-
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(bind[Clock].toInstance(Clock.systemDefaultZone), bind[IdentifierAction].to[AuthenticatedIdentifierAction])
+object ReadSubmissionRequestCommon {
+  implicit val format: OFormat[ReadSubmissionRequestCommon] = Json.format[ReadSubmissionRequestCommon]
+}

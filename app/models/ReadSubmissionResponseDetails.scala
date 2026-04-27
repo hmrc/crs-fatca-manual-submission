@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package module
+package models
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.Clock
+case class ReadSubmissionResponseDetails(
+  submissionsList: List[SubmittedReport]
+)
 
-class Module extends AppModule:
-
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(bind[Clock].toInstance(Clock.systemDefaultZone), bind[IdentifierAction].to[AuthenticatedIdentifierAction])
+object ReadSubmissionResponseDetails {
+  implicit val format: OFormat[ReadSubmissionResponseDetails] = Json.format[ReadSubmissionResponseDetails]
+}

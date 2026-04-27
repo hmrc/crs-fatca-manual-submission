@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package module
+package queries
 
-import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import play.api.inject.{Binding, Module as AppModule}
-import play.api.{Configuration, Environment}
+import models.UserAnswers
+import play.api.libs.json.JsPath
 
-import java.time.Clock
+import scala.util.{Success, Try}
 
-class Module extends AppModule:
+sealed trait Query {
 
-  override def bindings(
-    environment: Environment,
-    configuration: Configuration
-  ): Seq[Binding[_]] =
-    Seq(bind[Clock].toInstance(Clock.systemDefaultZone), bind[IdentifierAction].to[AuthenticatedIdentifierAction])
+  def path: JsPath
+}
+
+trait Gettable[A] extends Query
+
+trait Settable[A] extends Query {
+
+  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
+    Success(userAnswers)
+}
