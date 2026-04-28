@@ -4,3 +4,5 @@
 POST        /read-submission-history        controllers.ReadAndCacheSubmissionController.readAndMaybeRefreshDatabase()
 
 POST        /submitVoidRequest              controllers.FatcaVoidController.submit()
+
+GET        /submissionList              controllers.SubmissionController.get()

@@ -19,7 +19,9 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
 import models.RequestSubmissionHistoryParameters
+import play.api.Logging
 import play.api.libs.json.Json
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Action, ControllerComponents}
 import services.SubmissionService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -29,7 +31,8 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class ReadAndCacheSubmissionController @Inject() (submissionService: SubmissionService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
   ec: ExecutionContext
-) extends BackendController(cc) {
+) extends BackendController(cc)
+    with Logging {
 
   def readAndMaybeRefreshDatabase(): Action[RequestSubmissionHistoryParameters] = identifierAction.async(parse.json[RequestSubmissionHistoryParameters]) {
     implicit request =>
@@ -37,6 +40,11 @@ class ReadAndCacheSubmissionController @Inject() (submissionService: SubmissionS
         .readAndMaybeCache(request.body, request.fatcaId)
         .map(
           response => Ok(Json.toJson(response))
+        )
+        .recover(
+          err =>
+            logger.error(s"Unable to read submission list ${err.getMessage}")
+            InternalServerError
         )
   }
 }

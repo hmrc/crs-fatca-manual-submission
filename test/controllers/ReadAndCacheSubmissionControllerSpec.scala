@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.matchers.must.Matchers.{must, mustBe}
 import play.api.Application
-import play.api.http.Status.OK
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -59,20 +59,15 @@ class ReadAndCacheSubmissionControllerSpec extends SpecBase {
       status(result) mustBe OK
     }
 
-    "must throw exception when service throws exception" in {
+    "must return internal server error when service fails the future" in {
 
       when(mockService.readAndMaybeCache(any(), any())(any())).thenReturn(Future.failed(InternalServerException("Failed")))
 
       val request = FakeRequest(POST, routes.ReadAndCacheSubmissionController.readAndMaybeRefreshDatabase().url)
         .withJsonBody(Json.toJson(RequestSubmissionHistoryParameters(true, None)))
 
-      val result = route(application, request).get
-
-      val ex = intercept[Throwable] {
-        status(result)
-      }
-      ex mustBe a[InternalServerException]
-      ex.getMessage must include("Failed")
+      val result = route(application, request).value
+      status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
 }

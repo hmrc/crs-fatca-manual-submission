@@ -16,8 +16,6 @@
 
 package models
 
-import java.time.ZoneId
-
 object Constants {
   val MDTPSystem: String             = "MDTP"
   val CRFARegime: String             = "CRFA"

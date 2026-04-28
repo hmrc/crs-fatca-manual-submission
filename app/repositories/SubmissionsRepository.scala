@@ -45,7 +45,7 @@ class SubmissionsRepository @Inject() (
           Indexes.ascending("lastUpdated"),
           IndexOptions()
             .name("lastUpdatedIdx")
-            .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
+            .expireAfter(appConfig.cacheTtl, TimeUnit.DAYS)
         )
       )
     ) {

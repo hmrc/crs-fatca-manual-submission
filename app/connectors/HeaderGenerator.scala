@@ -16,9 +16,6 @@
 
 package connectors
 
-import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
-import java.time.ZoneId
 import java.util.UUID
 
 object HeaderGenerator {

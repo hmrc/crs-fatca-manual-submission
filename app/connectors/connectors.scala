@@ -30,11 +30,11 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
+import uk.gov.hmrc.http.HeaderNames
 
 import java.time.format.DateTimeFormatter
 import java.time.{ZoneId, ZonedDateTime}
-import java.util.{Locale, UUID}
+import java.util.UUID
 
 package connectors:
 
