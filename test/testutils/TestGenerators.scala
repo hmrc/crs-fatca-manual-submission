@@ -17,6 +17,7 @@
 package testutils
 
 import models.SubmissionsConstants.{CRFA, CRS, CRS701, FATCA, PASSED, RegimeType, XML}
+import models.fatcavoid.*
 import models.{
   CommonParameters,
   ReadSubmissionRequest,
@@ -31,7 +32,7 @@ import models.{
 }
 import org.scalacheck.Gen
 
-import java.time.LocalDate
+import java.time.Instant
 
 trait TestGenerators {
 
@@ -101,7 +102,7 @@ trait TestGenerators {
           fiName = fiName,
           fileName = fileName,
           submissionStatus = PASSED,
-          uploadDateTime = LocalDate.now().toString,
+          uploadDateTime = Instant.now(),
           regime = CRS,
           reportingYear = "2025",
           submissionCaseId = submissionCaseId,
@@ -122,5 +123,29 @@ trait TestGenerators {
         responseDetails = responseDetail
       )
     )
+
+  def requestCommonGenForFatcaVoid: Gen[RequestCommon] =
+    RequestCommon(originatingSystem = "MDTP", transmittingSystem = "EIS", regime = Regime.FATCA, requestParameters = None)
+
+  def requestDetailsGenForFatcaVoid: Gen[RequestDetails] =
+    for {
+      subscriptionId <- Gen.alphaNumStr
+      messageRefId   <- Gen.alphaNumStr
+      fiId           <- Gen.alphaNumStr
+    } yield RequestDetails(subscriptionId = subscriptionId, messageRefId = messageRefId, fiId = fiId)
+
+  def voidRequestGen: Gen[VoidRequest] =
+    for {
+      requestCommon  <- requestCommonGenForFatcaVoid
+      requestDetails <- requestDetailsGenForFatcaVoid
+    } yield VoidRequest(
+      requestCommon = requestCommon,
+      requestDetails = requestDetails
+    )
+
+  def voidRequestPayloadGen: Gen[VoidRequestPayload] =
+    for {
+      voidReq <- voidRequestGen
+    } yield VoidRequestPayload(voidRequest = voidReq)
 
 }

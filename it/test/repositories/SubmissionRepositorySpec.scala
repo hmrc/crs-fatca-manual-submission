@@ -35,7 +35,7 @@ import java.time.temporal.ChronoUnit
 import java.time.{Clock, Instant, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
-class ManualSubmissionRepositorySpec
+class SubmissionRepositorySpec
   extends AnyFreeSpec
     with Matchers
     with DefaultPlayMongoRepositorySupport[UserAnswers]

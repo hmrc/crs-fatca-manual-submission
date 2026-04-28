@@ -40,12 +40,13 @@ class SubmissionsRepository @Inject() (
       collectionName = "user-answers",
       mongoComponent = mongoComponent,
       domainFormat = UserAnswers.format,
+      replaceIndexes = true,
       indexes = Seq(
         IndexModel(
           Indexes.ascending("lastUpdated"),
           IndexOptions()
             .name("lastUpdatedIdx")
-            .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
+            .expireAfter(appConfig.cacheTtl, TimeUnit.DAYS)
         )
       )
     ) {

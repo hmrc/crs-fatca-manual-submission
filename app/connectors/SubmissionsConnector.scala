@@ -36,11 +36,12 @@ class SubmissionsConnector @Inject() (val config: AppConfig, val repository: Sub
     extends Logging {
 
   def readSubmission(requestBody: ReadSubmissionRequest)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponse] = {
+    val serviceName   = "read-submission"
     val correlationID = UUID.randomUUID()
     http
       .post(url"${config.readSubmissionUrl}/dac6/getlistofsubmissions/v1")
       .withBody(Json.toJson(requestBody))
-      .setHeader(defaultHeaders(config.readSubmissionToken, correlationID): _*)
+      .setHeader(defaultHeaders(config.bearerToken(serviceName), correlationID): _*)
       .execute[HttpResponse]
       .flatMap {
         case res if res.status == 200 =>

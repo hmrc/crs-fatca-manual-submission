@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package connectors
+package models.fatcavoid
 
-import java.util.UUID
+import play.api.libs.json.{Json, OFormat}
 
-object HeaderGenerator {
+final case class RequestCommon(
+  originatingSystem: String,
+  transmittingSystem: String,
+  regime: Regime,
+  requestParameters: Option[Seq[RequestParameter]]
+)
 
-  def defaultHeaders(bearerToken: String, correlationID: UUID): Seq[(String, String)] =
-    Seq()
-      .withAccept()
-      .withBearerToken(bearerToken)
-      .withXCorrelationId(Some(correlationID))
-      .withContentType()
-      .withDate()
-      .withXConversationId()
-      .withXForwardedHost()
+object RequestCommon {
+  implicit val format: OFormat[RequestCommon] = Json.format[RequestCommon]
 }

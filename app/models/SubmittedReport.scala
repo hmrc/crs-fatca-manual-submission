@@ -19,12 +19,14 @@ package models
 import SubmissionsConstants.{RegimeType, SubmissionFileType, SubmissionStatus, SubmissionType}
 import play.api.libs.json.{Json, OFormat}
 
+import java.time.Instant
+
 case class SubmittedReport(
   fiId: String,
   fiName: String,
   fileName: String,
   submissionStatus: SubmissionStatus,
-  uploadDateTime: String,
+  uploadDateTime: Instant,
   regime: RegimeType,
   reportingYear: String,
   submissionCaseId: String,
