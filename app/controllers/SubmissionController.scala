@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
 import models.UserAnswers
+import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repositories.SubmissionsRepository
@@ -32,13 +33,15 @@ class SubmissionController @Inject() (
   repository: SubmissionsRepository,
   identifierAction: IdentifierAction
 )(implicit ec: ExecutionContext)
-    extends BackendController(cc) {
+    extends BackendController(cc)
+    with Logging {
 
   def get(): Action[AnyContent] = identifierAction.async {
     implicit request =>
       repository.get(request.fatcaId).map {
-        case Some(ua: UserAnswers) => Ok(Json.toJson(ua))
-        case _                     => NotFound
+        case Some(ua: UserAnswers) =>
+          Ok(Json.toJson(ua.data))
+        case _ => NotFound
       }
   }
 }
