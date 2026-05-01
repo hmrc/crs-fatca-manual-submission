@@ -21,7 +21,7 @@ import models.fatcavoid.*
 import models.{CommonParameters, ReadSubmissionRequest, ReadSubmissionRequestCommon, ReadSubmissionRequestDetails, ReadSubmissionResponse, ReadSubmissionResponseCommon, ReadSubmissionResponseDetails, SubmissionsListRequest, SubmissionsListResponse, SubmittedReport}
 import org.scalacheck.Gen
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime}
 
 trait Generators {
 
@@ -94,7 +94,7 @@ trait Generators {
           fiName = fiName,
           fileName = fileName,
           submissionStatus = PASSED,
-          uploadDateTime = Instant.now(),
+          uploadDateTime = LocalDateTime.now(),
           regime = CRS,
           reportingYear = "2025",
           submissionCaseId = submissionCaseId,

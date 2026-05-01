@@ -32,7 +32,7 @@ import models.{
 }
 import org.scalacheck.Gen
 
-import java.time.Instant
+import java.time.LocalDateTime
 
 trait TestGenerators {
 
@@ -102,7 +102,7 @@ trait TestGenerators {
           fiName = fiName,
           fileName = fileName,
           submissionStatus = PASSED,
-          uploadDateTime = Instant.now(),
+          uploadDateTime = LocalDateTime.now(),
           regime = CRS,
           reportingYear = "2025",
           submissionCaseId = submissionCaseId,

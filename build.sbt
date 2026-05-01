@@ -15,7 +15,7 @@ lazy val microservice = Project("crs-fatca-manual-submission", file("."))
     scalacOptions += "-Wconf:src=routes/.*:s",
   )
   .settings(CodeCoverageSettings.settings: _*)
-
+addCommandAlias("testAll", "; test ; it/test")
 lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test")
