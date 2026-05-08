@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.SubmissionsConnector
-import models.{RequestSubmissionHistoryParameters, UserAnswers}
+import models.{RequestSubmissionHistoryParameters, UserData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatest.matchers.must.Matchers.*
@@ -53,7 +53,7 @@ class SubmissionServiceSpec extends SpecBase {
         whenReady(result) {
           res =>
             res mustBe connectorResponse.submissionsListResponse.responseDetails
-            verify(repository).set(any[UserAnswers])
+            verify(repository).set(any[UserData])
             verify(connector).readSubmission(any())(any)
         }
       }

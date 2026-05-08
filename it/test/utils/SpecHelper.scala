@@ -16,7 +16,7 @@
 
 package utils
 
-import models.UserAnswers
+import models.UserData
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -36,7 +36,7 @@ trait SpecHelper
     with IntegrationPatience with Generators {
   val userAnswersId: String = "id"
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: UserData = UserData(userAnswersId)
   implicit val hc: HeaderCarrier =  HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

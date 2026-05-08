@@ -25,7 +25,7 @@ import models.{
   ReadSubmissionResponseDetails,
   RequestSubmissionHistoryParameters,
   SubmissionsListRequest,
-  UserAnswers
+  UserData
 }
 import org.apache.pekko.Done
 import play.api.libs.json.{JsObject, Json}
@@ -47,7 +47,7 @@ class SubmissionService @Inject() (submissionsConnector: SubmissionsConnector, r
       submissionResponse <- submissionsConnector.readSubmission(submissionRequest)
       submissions = submissionResponse.submissionsListResponse.responseDetails
       // NOTE: we should wipe their data and replace with new record if cache option is true
-      _ <- if (requestBody.shouldCache) repository.set(UserAnswers(subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
+      _ <- if (requestBody.shouldCache) repository.set(UserData(subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
     yield submissions
   }
 }

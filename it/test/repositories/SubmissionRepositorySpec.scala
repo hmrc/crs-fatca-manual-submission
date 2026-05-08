@@ -17,7 +17,7 @@
 package repositories
 
 import config.AppConfig
-import models.UserAnswers
+import models.UserData
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalactic.source.Position
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SubmissionRepositorySpec
   extends AnyFreeSpec
     with Matchers
-    with DefaultPlayMongoRepositorySupport[UserAnswers]
+    with DefaultPlayMongoRepositorySupport[UserData]
     with ScalaFutures
     with IntegrationPatience
     with OptionValues
@@ -47,7 +47,7 @@ class SubmissionRepositorySpec
   private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers = UserAnswers("id", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+  private val userAnswers = UserData("id", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[AppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1L
