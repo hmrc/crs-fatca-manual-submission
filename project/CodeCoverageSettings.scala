@@ -15,6 +15,7 @@ object CodeCoverageSettings {
     "models.*",
     "pages.*",
     "testOnly.*",
+    "queries.*",
     "testOnlyDoNotUseInAppConf.*"
   )
 
