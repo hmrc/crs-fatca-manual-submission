@@ -31,7 +31,7 @@ import testutils.RetrievalOps.Ops
 import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{~, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,14 +42,15 @@ class AuthenticatedIdentifierActionSpec extends SpecBase {
 
   class Harness(authAction: IdentifierAction) {
 
-    def onPageLoad(): Action[AnyContent] = authAction { _ =>
-      Results.Ok
+    def onPageLoad(): Action[AnyContent] = authAction {
+      _ =>
+        Results.Ok
     }
   }
 
-  val mockAuthConnector: AuthConnector     = mock[AuthConnector]
-  val bodyParsers: BodyParsers.Default     = app.injector.instanceOf[BodyParsers.Default]
-  val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val bodyParsers: BodyParsers.Default = app.injector.instanceOf[BodyParsers.Default]
+  val appConfig: AppConfig             = app.injector.instanceOf[AppConfig]
 
   type AuthRetrievals = Option[String] ~ Enrolments ~ Option[AffinityGroup]
 
@@ -66,7 +67,7 @@ class AuthenticatedIdentifierActionSpec extends SpecBase {
       running(application) {
         val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new MissingBearerToken), appConfig, bodyParsers)
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(FakeRequest())
+        val result     = controller.onPageLoad()(FakeRequest())
         whenReady(result.failed) {
           ex => ex.getMessage mustBe "Unable to retrieve internal id or affinity group"
         }
@@ -81,7 +82,7 @@ class AuthenticatedIdentifierActionSpec extends SpecBase {
         )
         .build()
       val enrolments: Set[Enrolment] = Set(
-        Enrolment("HMRC-FATCA-ORG", Seq(EnrolmentIdentifier("FATCAID","XE3ATCA0009234567")),"Activated")
+        Enrolment("HMRC-FATCA-ORG", Seq(EnrolmentIdentifier("FATCAID", "XE3ATCA0001234567")), "Activated")
       )
       val validRetrievals: AuthRetrievals = Some("userId") ~ Enrolments(enrolments) ~ Some(Organisation)
 
@@ -90,7 +91,7 @@ class AuthenticatedIdentifierActionSpec extends SpecBase {
           .thenReturn(Future.successful(validRetrievals))
         val authAction = new AuthenticatedIdentifierAction(mockAuthConnector, appConfig, bodyParsers)
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(FakeRequest())
+        val result     = controller.onPageLoad()(FakeRequest())
         status(result) mustBe OK
       }
     }
