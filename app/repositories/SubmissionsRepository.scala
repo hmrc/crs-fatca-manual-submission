@@ -17,7 +17,7 @@
 package repositories
 
 import config.AppConfig
-import models.UserAnswers
+import models.UserData
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.*
 import play.api.libs.json.Format
@@ -36,10 +36,10 @@ class SubmissionsRepository @Inject() (
   appConfig: AppConfig,
   clock: Clock
 )(implicit ec: ExecutionContext)
-    extends PlayMongoRepository[UserAnswers](
+    extends PlayMongoRepository[UserData](
       collectionName = "user-answers",
       mongoComponent = mongoComponent,
-      domainFormat = UserAnswers.format,
+      domainFormat = UserData.format,
       replaceIndexes = false,
       indexes = Seq(
         IndexModel(
@@ -66,7 +66,7 @@ class SubmissionsRepository @Inject() (
         _ => true
       )
 
-  def get(id: String): Future[Option[UserAnswers]] =
+  def get(id: String): Future[Option[UserData]] =
     keepAlive(id).flatMap {
       _ =>
         Mdc.preservingMdc {
@@ -76,7 +76,7 @@ class SubmissionsRepository @Inject() (
         }
     }
 
-  def set(answers: UserAnswers): Future[Boolean] = {
+  def set(answers: UserData): Future[Boolean] = {
 
     val updatedAnswers = answers copy (lastUpdated = Instant.now(clock))
 

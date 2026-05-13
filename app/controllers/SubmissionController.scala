@@ -18,7 +18,7 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
-import models.UserAnswers
+import models.UserData
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -39,8 +39,8 @@ class SubmissionController @Inject() (
   def get(): Action[AnyContent] = identifierAction.async {
     implicit request =>
       repository.get(request.fatcaId).map {
-        case Some(ua: UserAnswers) =>
-          Ok(Json.toJson(ua.data))
+        case Some(ud: UserData) =>
+          Ok(Json.toJson(ud))
         case _ => NotFound
       }
   }
