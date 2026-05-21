@@ -22,22 +22,22 @@ import models.RequestSubmissionHistoryParameters
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.Results.InternalServerError
-import play.api.mvc.{Action, ControllerComponents}
-import services.SubmissionService
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import services.SubmissionsService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ReadAndCacheSubmissionController @Inject() (submissionService: SubmissionService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
-  ec: ExecutionContext
+class ReadSubmissionController @Inject()(submissionService: SubmissionsService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
+                                                                                                                                              ec: ExecutionContext
 ) extends BackendController(cc)
     with Logging {
 
-  def readAndMaybeRefreshDatabase(): Action[RequestSubmissionHistoryParameters] = identifierAction.async(parse.json[RequestSubmissionHistoryParameters]) {
+  def readSubmissionHistory(fiId: String): Action[AnyContent] = identifierAction.async {
     implicit request =>
       submissionService
-        .readAndMaybeCache(request.body, request.fatcaId)
+        .getSubmissionHistory(fiId, request.fatcaId)
         .map(
           response => Ok(Json.toJson(response))
         )

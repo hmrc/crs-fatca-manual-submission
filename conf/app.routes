@@ -1,7 +1,7 @@
 # microservice specific routes
 
 
-POST        /read-submission-history        controllers.ReadAndCacheSubmissionController.readAndMaybeRefreshDatabase()
+GET        /read-submission-history/:fiId        controllers.ReadSubmissionController.readSubmissionHistory(fiId: String)
 
 POST        /submitVoidRequest              controllers.FatcaVoidController.submit()
 

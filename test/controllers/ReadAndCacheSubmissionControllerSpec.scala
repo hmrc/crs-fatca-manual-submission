@@ -28,20 +28,20 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{defaultAwaitTimeout, route, status, writeableOf_AnyContentAsJson, POST}
-import services.SubmissionService
+import services.SubmissionsService
 import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.Future
 
 class ReadAndCacheSubmissionControllerSpec extends SpecBase {
 
-  val mockService: SubmissionService = mock[SubmissionService]
+  val mockService: SubmissionsService = mock[SubmissionsService]
 
   override def beforeEach(): Unit = reset(mockService)
 
   val application: Application = applicationBuilder()
     .overrides(
-      bind[SubmissionService].toInstance(mockService),
+      bind[SubmissionsService].toInstance(mockService),
       bind[IdentifierAction].to[FakeIdentifierAuthAction]
     )
     .build()
@@ -50,7 +50,7 @@ class ReadAndCacheSubmissionControllerSpec extends SpecBase {
     "must return OK with submission list when service returns OK" in {
 
       val response = responseDetailsGen.sample.get
-      when(mockService.readAndMaybeCache(any(), any())(any())).thenReturn(Future.successful(response))
+      when(mockService.getSubmissionHistory(any(), any())(any())).thenReturn(Future.successful(response))
 
       val request = FakeRequest(POST, routes.ReadAndCacheSubmissionController.readAndMaybeRefreshDatabase().url)
         .withJsonBody(Json.toJson(RequestSubmissionHistoryParameters(true, None)))
@@ -61,7 +61,7 @@ class ReadAndCacheSubmissionControllerSpec extends SpecBase {
 
     "must return internal server error when service fails the future" in {
 
-      when(mockService.readAndMaybeCache(any(), any())(any())).thenReturn(Future.failed(InternalServerException("Failed")))
+      when(mockService.getSubmissionHistory(any(), any())(any())).thenReturn(Future.failed(InternalServerException("Failed")))
 
       val request = FakeRequest(POST, routes.ReadAndCacheSubmissionController.readAndMaybeRefreshDatabase().url)
         .withJsonBody(Json.toJson(RequestSubmissionHistoryParameters(true, None)))
