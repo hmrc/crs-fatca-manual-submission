@@ -29,8 +29,8 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ReadSubmissionController @Inject()(submissionService: SubmissionsService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
-                                                                                                                                              ec: ExecutionContext
+class ReadSubmissionController @Inject() (submissionService: SubmissionsService, identifierAction: IdentifierAction, cc: ControllerComponents)(implicit
+  ec: ExecutionContext
 ) extends BackendController(cc)
     with Logging {
 

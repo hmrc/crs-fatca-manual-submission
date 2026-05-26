@@ -32,7 +32,7 @@ class SubmissionServiceSpec extends SpecBase {
 
   val repository: SubmissionsRepository = mock[SubmissionsRepository]
   val connector: SubmissionsConnector   = mock[SubmissionsConnector]
-  val service: SubmissionsService        = SubmissionsService(connector, repository)
+  val service: SubmissionsService       = SubmissionsService(connector, repository)
 
   override def beforeEach(): Unit = {
     reset(repository, connector)

@@ -35,10 +35,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubmissionsService @Inject()(submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
+class SubmissionsService @Inject() (submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
 
   def getSubmissionHistory(fiId: String, subscriptionId: String)(implicit
-                                                                 hc: HeaderCarrier
+    hc: HeaderCarrier
   ): Future[ReadSubmissionResponseDetails] = {
     val submissionRequest = ReadSubmissionRequest(
       SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(subscriptionId, Some(fiId)), requestCommon = ReadSubmissionRequestCommon())
