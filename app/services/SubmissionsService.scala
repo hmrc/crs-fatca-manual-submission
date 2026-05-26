@@ -23,7 +23,6 @@ import models.{
   ReadSubmissionRequestCommon,
   ReadSubmissionRequestDetails,
   ReadSubmissionResponseDetails,
-  RequestSubmissionHistoryParameters,
   SubmissionsListRequest,
   UserAnswers
 }

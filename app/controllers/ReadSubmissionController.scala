@@ -18,7 +18,6 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
-import models.RequestSubmissionHistoryParameters
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.Results.InternalServerError
