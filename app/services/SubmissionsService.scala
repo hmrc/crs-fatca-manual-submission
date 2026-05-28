@@ -23,9 +23,8 @@ import models.{
   ReadSubmissionRequestCommon,
   ReadSubmissionRequestDetails,
   ReadSubmissionResponseDetails,
-  RequestSubmissionHistoryParameters,
   SubmissionsListRequest,
-  UserData
+  UserAnswers
 }
 import org.apache.pekko.Done
 import play.api.libs.json.{JsObject, Json}
@@ -35,19 +34,17 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubmissionService @Inject() (submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
+class SubmissionsService @Inject() (submissionsConnector: SubmissionsConnector, repository: SubmissionsRepository)(implicit ec: ExecutionContext) {
 
-  def readAndMaybeCache(requestBody: RequestSubmissionHistoryParameters, subscriptionId: String)(implicit
+  def getSubmissionHistory(fiId: String, subscriptionId: String)(implicit
     hc: HeaderCarrier
   ): Future[ReadSubmissionResponseDetails] = {
     val submissionRequest = ReadSubmissionRequest(
-      SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(subscriptionId, requestBody.fiId), requestCommon = ReadSubmissionRequestCommon())
+      SubmissionsListRequest(requestDetails = ReadSubmissionRequestDetails(subscriptionId, Some(fiId)), requestCommon = ReadSubmissionRequestCommon())
     )
     for
       submissionResponse <- submissionsConnector.readSubmission(submissionRequest)
       submissions = submissionResponse.submissionsListResponse.responseDetails
-      // NOTE: we should wipe their data and replace with new record if cache option is true
-      _ <- if (requestBody.shouldCache) repository.set(UserData(subscriptionId, Json.toJson(submissions).as[JsObject])) else Future.successful(Done)
     yield submissions
   }
 }
