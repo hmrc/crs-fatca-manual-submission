@@ -20,7 +20,7 @@ import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
 import models.UserAnswers
 import play.api.Logging
-import play.api.libs.json.{JsResult, JsValue}
+import play.api.libs.json.{JsResult, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repositories.SubmissionsRepository
 import uk.gov.hmrc.http.{BadRequestException, InternalServerException}
@@ -36,6 +36,15 @@ class UserAnswerController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BackendController(cc)
     with Logging {
+
+  def get(): Action[AnyContent] = identifierAction.async {
+    implicit request =>
+      repository.get(request.fatcaId).map {
+        case Some(ud: UserAnswers) =>
+          Ok(Json.toJson(ud))
+        case _ => NotFound
+      }
+  }
 
   def save(): Action[JsValue] = identifierAction.async(parse.json) {
     implicit request =>
