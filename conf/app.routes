@@ -6,3 +6,5 @@ GET        /read-submission-history/:fiId        controllers.ReadSubmissionContr
 POST        /submitVoidRequest              controllers.FatcaVoidController.submit()
 
 GET        /submissionList              controllers.SubmissionController.get()
+
+POST       /user-answer/save              controllers.UserAnswerController.save()
