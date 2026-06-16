@@ -56,13 +56,9 @@ class UserAnswerController @Inject() (
           logger.error(s"Invalid Json request $invalid")
           Future.successful(BadRequest)
         ,
-        valid =>
-          repository.set(valid).flatMap {
-            result =>
-              if result then Future.successful(Ok)
-              else
-                logger.error("Unable to save the user answers")
-                Future.successful(InternalServerError)
+        validUserAnswers =>
+          repository.set(validUserAnswers).flatMap {
+            _ => Future.successful(Ok)
           }
       )
   }

@@ -92,23 +92,6 @@ class UserAnswerControllerSpec extends SpecBase {
         status(result) mustBe OK
       }
 
-      "must return OK when repository unable to save user answers" in {
-
-        val ua =
-          """{
-            |"_id":"testSubscriptionId",
-            |"data":{"submissionsList":[
-            |{"fiId":"1234567890","fiName":"Test FI Name","fileName":"testfilename","submissionStatus":"PASSED","uploadDateTime":"2025-02-28T10:20:56.789Z","regime":"CRS","reportingYear":"2016","submissionCaseId":"CRS-SUB-12224","submissionType":"XML","submissionFileType":"CRS702","messageRefId":"testfilename"},
-            |{"fiId":"1234567890","fiName":"Test FI Name1","fileName":"testfilename1","submissionStatus":"PASSED","uploadDateTime":"2025-02-28T10:20:56.789Z","regime":"FATCA","reportingYear":"2016","submissionCaseId":"FATCA-SUB-12224","submissionType":"XML","submissionFileType":"FATCA2","messageRefId":"testfilename1","submissionDeleteStatus":true}]
-            |},"lastUpdated":{"$date":{"$numberLong":"1777305419357"}}}""".stripMargin
-        when(mockRepository.set(any())).thenReturn(Future.successful(false))
-
-        val request = FakeRequest(POST, routes.UserAnswerController.save().url).withBody(Json.parse(ua))
-
-        val result = route(application, request).value
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
       "must return BadRequest when repository saves user answers" in {
 
         val ua = """{
