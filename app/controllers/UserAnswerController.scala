@@ -20,15 +20,16 @@ import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
 import models.UserAnswers
 import play.api.Logging
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResult, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repositories.SubmissionsRepository
+import uk.gov.hmrc.http.{BadRequestException, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SubmissionController @Inject() (
+class UserAnswerController @Inject() (
   cc: ControllerComponents,
   repository: SubmissionsRepository,
   identifierAction: IdentifierAction
@@ -43,5 +44,22 @@ class SubmissionController @Inject() (
           Ok(Json.toJson(ud))
         case _ => NotFound
       }
+  }
+
+  def save(): Action[JsValue] = identifierAction.async(parse.json) {
+    implicit request =>
+      val requestBodyValidationResult: JsResult[UserAnswers] =
+        request.body.validate[UserAnswers]
+
+      requestBodyValidationResult.fold(
+        invalid =>
+          logger.error(s"Invalid Json request $invalid")
+          Future.successful(BadRequest)
+        ,
+        validUserAnswers =>
+          repository.set(validUserAnswers).flatMap {
+            _ => Future.successful(Ok)
+          }
+      )
   }
 }
