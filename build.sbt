@@ -16,6 +16,10 @@ lazy val microservice = Project("crs-fatca-manual-submission", file("."))
   )
   .settings(CodeCoverageSettings.settings: _*)
 addCommandAlias("testAll", "; test ; it/test")
+addCommandAlias(
+  "precommit",
+  "; clean ; scalafmtAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
+)
 lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test")
