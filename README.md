@@ -17,6 +17,7 @@ Service manager: CRS_FATCA_ALL
 
 ### API
 
+
 | Task                     | Supported methods | Description                                                   |
 |--------------------------|-------------------|---------------------------------------------------------------|
 | /read-submission-history | POST              | Reads Submission History for fiid(if provided) & subscription |

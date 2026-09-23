@@ -67,7 +67,9 @@ class SubmissionsConnectorISpec extends SpecHelper with WireMockServerHandler {
             "submissionCaseId": "CRS-SUB-12224",
             "submissionType": "XML",
             "submissionFileType": "CRS702",
-            "messageRefId": "GB2025GB-XZU9323406858-APIMB0256"
+            "messageRefId": "GB2025GB-XZU9323406858-APIMB0256",
+            "isNilReport": false,
+            "submissionDeleteStatus": false
           },
           {
             "fiId": "XZU9323406868",
@@ -81,7 +83,8 @@ class SubmissionsConnectorISpec extends SpecHelper with WireMockServerHandler {
             "submissionType": "XML",
             "submissionFileType": "FATCA2",
             "messageRefId": "GB2025GB-XZU9323406858-APIMB0266",
-            "submissionDeleteStatus": true
+            "submissionDeleteStatus": true,
+            "isNilReport": false
           }
         ]
       }
