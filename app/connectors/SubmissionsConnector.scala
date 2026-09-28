@@ -52,7 +52,7 @@ class SubmissionsConnector @Inject() (val config: AppConfig, val repository: Sub
               Future.failed(UpstreamErrorResponse("Invalid json returned", INTERNAL_SERVER_ERROR))
           }
         case res =>
-          logger.error(s"Unsuccessful call made to retrieve submission data for ${correlationID.toString}")
+          logger.error(s"Unsuccessful call made to retrieve submission data for ${correlationID.toString} with status ${res.status} ${res.body}")
           Future.failed(UpstreamErrorResponse("Unexpected response code", INTERNAL_SERVER_ERROR))
       }
   }

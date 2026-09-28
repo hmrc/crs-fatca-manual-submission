@@ -100,7 +100,9 @@ trait Generators {
           submissionCaseId = submissionCaseId,
           submissionType = XML,
           submissionFileType = CRS701,
-          messageRefId = messageRefId
+          messageRefId = messageRefId,
+          isNilReport = false,
+          submissionDeleteStatus = false
         )
       )
     )
