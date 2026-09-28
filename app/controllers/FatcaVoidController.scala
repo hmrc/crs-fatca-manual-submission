@@ -32,7 +32,8 @@ class FatcaVoidController @Inject() (
   service: FatcaVoidService,
   identifierAction: IdentifierAction
 )(implicit ec: ExecutionContext)
-    extends BackendController(cc) with Logging{
+    extends BackendController(cc)
+    with Logging {
 
   def submit(): Action[VoidFatcaRequest] = identifierAction.async(parse.json[VoidFatcaRequest]) {
     implicit request =>
