@@ -22,6 +22,7 @@ import services.FatcaVoidService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.IdentifierAction
+import play.api.Logging
 
 import scala.concurrent.ExecutionContext
 
@@ -31,7 +32,7 @@ class FatcaVoidController @Inject() (
   service: FatcaVoidService,
   identifierAction: IdentifierAction
 )(implicit ec: ExecutionContext)
-    extends BackendController(cc) {
+    extends BackendController(cc) with Logging{
 
   def submit(): Action[VoidFatcaRequest] = identifierAction.async(parse.json[VoidFatcaRequest]) {
     implicit request =>
@@ -41,7 +42,9 @@ class FatcaVoidController @Inject() (
           _ => Ok
         )
         .recover(
-          _ => InternalServerError
+          err =>
+            logger.error(s"Unable to void fatca request ${err.getMessage}")
+            InternalServerError
         )
   }
 }
